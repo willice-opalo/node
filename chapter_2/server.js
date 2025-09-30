@@ -5,7 +5,7 @@ const express = require('express')
 const app = express()
 const PORT = 8383
 
-let data = ['james']
+let data = ['Willis']
 
 // Middleware
 app.use(express.json())
@@ -18,7 +18,7 @@ app.use(express.json())
 app.get('/', (req, res) => {
     console.log('User requested the home page website')
     res.send(`
-        <body style="background:pink;color: blue;">
+        <body style="background:white;color: black;">
         <h1>DATA:</h1>
             <p>${JSON.stringify(data)}</p>
             <a href="/dashboard">Dashboard</a>
@@ -29,12 +29,10 @@ app.get('/', (req, res) => {
 
 app.get('/dashboard', (req, res) => {
     res.send(`
-        <body>
+        <body  style="color:black;>
         <h1>dashboard</h1>
         <a href="/">home</a>
         </body>
-        
-        
         `)
 })
 
