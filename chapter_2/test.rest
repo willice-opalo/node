@@ -1,0 +1,2 @@
+### TEST GET / WEBSITE
+GET http://locahost:8383
