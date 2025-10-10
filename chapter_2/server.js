@@ -1,11 +1,19 @@
-// The address of this server connected to the network is: 
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+// The address of this server connected to the network is:
 // URL -> http://localhost:8383
 // IP -> 127.0.0.1:8383
-const express = require('express')
-const app = express()
+
+dotenv.config()
+
+const app = express();
 const PORT = 8383
 
-let data = ['Willis']
+app.use(cors())
+app.use(express.json())
+
+let data = ['Williss Opalo']
 
 // Middleware
 app.use(express.json())
