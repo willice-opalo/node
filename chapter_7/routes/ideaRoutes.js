@@ -73,8 +73,8 @@ router.post('/', protect, async (req, res, next) => {
               .map((tag) => tag.trim())
               .filter(Boolean)
           : Array.isArray(tags)
-          ? tags
-          : [],
+            ? tags
+            : [],
       user: req.user.id,
     });
 
