@@ -8,27 +8,27 @@ const router = express.Router()
 //@access           Public
 router.post('/register', async function (req, res, next) {
     try {
-        const { name, email, password } = req.body
-        if (!name || !email || !password) {
-            res.status(400)
+        const { name, password, email } = req.body
+        if (!name || !password || !email) {
+            res.send(400)
             throw new Error("All fields are required");
         }
         const existingUser = await Users.findOne({ email })
         if (existingUser) {
-            res.send(400)
+            res.send(401)
             throw new Error("User already exists");
         }
-        const user = await Users.create({ name, email, password })
-        res.status(201).json({
+        const user = await Users.create({ name, password, email })
+        res.send(201).json({
             user: {
                 id: user._id,
                 name: user.name,
-                password: user.password,
+                email: user.email,
             }
         })
     } catch (err) {
         console.log(err)
-        next(err)
+       next(err)
     }
 })
 
