@@ -1,6 +1,6 @@
 import express from 'express'
-import User from '../module/User.js'
-import Users from '../models/Users.js'
+import Users from '../module/users.js'
+// import Users from '../models/Users.js'
 const router = express.Router()
 
 //@route            POST app/auth/register
