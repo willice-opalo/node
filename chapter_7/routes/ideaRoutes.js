@@ -1,8 +1,8 @@
 import express from 'express';
 const router = express.Router();
-import Idea from '../models/Idea.js';
+import Idea from '../models/Idea';
 import mongoose from 'mongoose';
-import { protect } from '../middleware/authMiddleware.js';
+import { protect } from '../middleware/authMiddleware';
 
 // @route           GET /api/ideas
 // @description     Get all ideas
@@ -110,6 +110,8 @@ router.delete('/:id', protect, async (req, res, next) => {
       res.status(403);
       throw new Error('Not authorized to delete this idea');
     }
+
+    // res.json(idea)
 
     await idea.deleteOne();
 

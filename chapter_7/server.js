@@ -1,9 +1,9 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from "dotenv";
-import ideaRouter from './routes/ideaRoutes.js';
-import authRouter from './routes/authRoutes.js';
-import { errorHandler } from './middleware/errorHandler.js';
+import ideaRouter from './routes/ideaRoutes';
+import authRouter from './routes/authRoutes';
+import { errorHandler } from './middleware/errorHandler';
 import conectDB from './config/db.js';
 
 dotenv.config();
