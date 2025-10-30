@@ -7,10 +7,10 @@ import { JWT_SECRET } from "./getJwtSecret";
 // dotenv.config()
 
 // //convert secret into Uint8Array
-// const JWT_SECRET = new TextDecoder().encode(process.env.JWT_SECRET)
+// const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET)
 
 
-export const generateTokent = async (payload, expiresIn = '15m') => {
+export const generateToken = async (payload, expiresIn = '15m') => {
     return await new SignJWT(payload)
         .setProtectedHeader({ alg: 'HS256' })
         .setIssuedAt()
