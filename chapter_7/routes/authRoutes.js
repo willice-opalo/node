@@ -1,7 +1,7 @@
 import express from 'express'
-import Users from '../module/users.js'
+// import Users from '../models/users.js'
 import { generateToken } from '../utils/generateToken.js'
-// import Users from '../models/Users.js'
+import Users from '../models/Users.js'
 const router = express.Router()
 
 //@route            POST app/auth/register
@@ -30,7 +30,7 @@ router.post('/register', async function (req, res, next) {
         const accessToken = generateToken(payload, '1m')
         const refreshToken = generateToken(payload, '30d')
 
-        //setting the http-only cookie
+        //setting the jwt to http-only cookie
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',

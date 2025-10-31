@@ -1,5 +1,5 @@
 import { SignJWT } from "jose";
-import { JWT_SECRET } from "./getJwtSecret";
+import { JWT_SECRET } from "./getJwtSecret.js";
 
 
 // import dotenv from "dotenv"
