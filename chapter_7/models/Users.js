@@ -34,6 +34,7 @@ userSchema.pre('save', async function (next) {
     next()
 })
 
+//password has to be same with that hashed
 userSchema.methods.matchPassword = async function (enteredPassword) {
     return await bcrypt.compare(enteredPassword, this.password)
 }

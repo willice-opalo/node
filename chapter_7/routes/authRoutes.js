@@ -1,5 +1,7 @@
 import express from 'express'
 // import Users from '../models/users.js'
+import { jwtVerify } from 'jose'
+import { JWT_SECRET } from '../utils/getJwtSecret.js'
 import { generateToken } from '../utils/generateToken.js'
 import Users from '../models/Users.js'
 const router = express.Router()
@@ -9,7 +11,7 @@ const router = express.Router()
 //@access           Public
 router.post('/register', async function (req, res, next) {
     try {
-        const { name, password, email } = req.body
+        const { name, password, email } = req.body || {}
 
         if (!name || !password || !email) {
             res.send(400)
@@ -57,7 +59,7 @@ router.post('/register', async function (req, res, next) {
 //@access           Private
 router.post('/login', async (res, req, next) => {
     try {
-        const { email, password } = res.body
+        const { email, password } = req.body || {}
 
         if (!email || !password) {
             res.status(404)
@@ -72,6 +74,7 @@ router.post('/login', async (res, req, next) => {
             throw new Error('Invalid Credentials')
         }
 
+        //Check is password hashed matches 
         const isMatch = await user.matchPassword(password)
 
         if (!isMatch) {
@@ -122,4 +125,41 @@ router.post('/logout', (res, req, next) => {
     })
 })
 
+//@route            POST app/auth/register
+//@description      Generate new access token from refresh token
+//@access           Public and it needs valid refresh cookie
+router.post('./refresh', async (res, req, next) => {
+    try {
+        const token = req.cookie?.refreshToken
+        console.log('Refreshing Token...')
+
+        if (!token) {
+            res.status(401)
+            throw new Error('No refresh token')
+        }
+
+        const { payload } = await jwtVerify(token, JWT_SECRET)
+        
+        const user = await Users.findById(payload.userId)
+
+        if (!user) {
+            res.status(401)
+            throw new Error('No user')
+        }
+
+        const newAccessToken = await generateToken({ userId: user._id.toString() }, '1m')
+        
+        res.json({
+            accessToken: newAccessToken,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email
+            }
+        })
+    } catch (err) {
+        res.status(401)
+        next(err)
+    }
+})
 export default router;
