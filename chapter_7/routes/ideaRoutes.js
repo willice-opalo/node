@@ -10,14 +10,21 @@ const router = express.Router();
 // @query           _limit (optional limit for ideas returned)
 router.get('/', async (req, res, next) => {
   try {
-    const limit = parseInt(req.query._limit);
-    const query = Idea.find().sort({ createdAt: -1 });
+    // const limit = parseInt(req.query._limit);
+    // const query = Idea.find().sort({ createdAt: -1 });
 
-    if (!isNaN(limit)) {
-      query.limit(limit);
+    // if (!isNaN(limit)) {
+    //   query.limit(limit);
+    // }
+
+    // const ideas = await query.exec();
+    const ideas = await Idea.find() 
+
+    if (!ideas) {
+      res.status(404)
+      throw new Error("Not Found");
     }
 
-    const ideas = await query.exec();
     res.json(ideas);
   } catch (err) {
     console.log(err);
@@ -79,7 +86,9 @@ router.post('/', async (req, res, next) => {
     });
 
     const savedIdea = await newIdea.save();
+
     res.status(201).json(savedIdea);
+    
   } catch (err) {
     console.log(err);
     next(err);

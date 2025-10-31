@@ -57,17 +57,21 @@ router.post('/register', async function (req, res, next) {
 //@route            POST app/auth/login
 //@description      authenticate user
 //@access           Private
-router.post('/login', async (res, req, next) => {
+router.post('/login', async (req, res, next) => {
     try {
-        const { email, password } = req.body || {}
+        const { email, password } = req.body || {};
 
         if (!email || !password) {
-            res.status(404)
-            throw new Error('User Not Found')
+            res.status(404);
+            throw new Error('User Not Found');
         }
 
         //find the user
         const user = await findOne({ email })
+
+        // if (!email || !password) {
+        //   return res.status(404).json({ message: 'User Not Found' });
+        // }
 
         if (!user) {
             res.status(404)
@@ -88,7 +92,7 @@ router.post('/login', async (res, req, next) => {
         const refreshToken = generateToken(payload, '30d')
 
         //setting the http-only cookie
-        res.cookies('refreshToken', refreshToken, {
+        res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'none',
@@ -113,7 +117,7 @@ router.post('/login', async (res, req, next) => {
 //@description      Logout User
 //@access           Private
 
-router.post('/logout', (res, req, next) => {
+router.post('/logout', (req, res, next) => {
     res.clearCookie('refreshToken', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
@@ -128,9 +132,9 @@ router.post('/logout', (res, req, next) => {
 //@route            POST app/auth/register
 //@description      Generate new access token from refresh token
 //@access           Public and it needs valid refresh cookie
-router.post('./refresh', async (res, req, next) => {
+router.post('./refresh', async (req, res, next) => {
     try {
-        const token = req.cookie?.refreshToken
+        const token = req.cookies?.refreshToken
         console.log('Refreshing Token...')
 
         if (!token) {
