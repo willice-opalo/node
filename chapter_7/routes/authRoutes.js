@@ -131,7 +131,7 @@ router.post('/logout', (req, res, next) => {
 
 //@route            POST app/auth/register
 //@description      Generate new access token from refresh token
-//@access           Public and it needs valid refresh cookie
+//@access           Public and it needs valid refresh cookie token
 router.post('./refresh', async (req, res, next) => {
     try {
         const token = req.cookies?.refreshToken
