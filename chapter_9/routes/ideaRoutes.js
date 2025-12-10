@@ -13,6 +13,7 @@ router.get("/", (req, res) => {
 
 router.post("/", (req, res) => {
   const { title, description } = req.body;
+  console.log(title);
   console.log(description);
   //   res.send(`Title: ${title}, Description: ${description}`);
   res.json({ title, description });
