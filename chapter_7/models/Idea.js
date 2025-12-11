@@ -4,27 +4,23 @@ const ideaSchema = new mongoose.Schema(
   {
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Users",
+      ref: "User",
       required: true,
     },
-
     title: {
       type: String,
-      require: true,
+      required: true,
       trim: true,
     },
-
-    summery: {
+    summary: {
       type: String,
-      require: true,
+      required: true,
       trim: true,
     },
-
     description: {
       type: String,
-      require: true,
+      required: true,
     },
-
     tags: {
       type: [String],
       default: [],

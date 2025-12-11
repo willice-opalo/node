@@ -1,9 +1,8 @@
 import express from "express";
+const router = express.Router();
 import Idea from "../models/Idea.js";
 import mongoose from "mongoose";
 import { protect } from "../middleware/authMiddleware.js";
-// import { protect } from '../middleware/authMiddleware.js';
-const router = express.Router();
 
 // @route           GET /api/ideas
 // @description     Get all ideas
@@ -11,21 +10,14 @@ const router = express.Router();
 // @query           _limit (optional limit for ideas returned)
 router.get("/", async (req, res, next) => {
   try {
-    // const limit = parseInt(req.query._limit);
-    // const query = Idea.find().sort({ createdAt: -1 });
+    const limit = parseInt(req.query._limit);
+    const query = Idea.find().sort({ createdAt: -1 });
 
-    // if (!isNaN(limit)) {
-    //   query.limit(limit);
-    // }
-
-    // const ideas = await query.exec();
-    const ideas = await Idea.find();
-
-    if (!ideas) {
-      res.status(404);
-      throw new Error("Not Found");
+    if (!isNaN(limit)) {
+      query.limit(limit);
     }
 
+    const ideas = await query.exec();
     res.json(ideas);
   } catch (err) {
     console.log(err);
@@ -87,7 +79,6 @@ router.post("/", protect, async (req, res, next) => {
     });
 
     const savedIdea = await newIdea.save();
-
     res.status(201).json(savedIdea);
   } catch (err) {
     console.log(err);
@@ -119,8 +110,6 @@ router.delete("/:id", protect, async (req, res, next) => {
       res.status(403);
       throw new Error("Not authorized to delete this idea");
     }
-
-    // res.json(idea)
 
     await idea.deleteOne();
 
@@ -164,7 +153,7 @@ router.put("/:id", protect, async (req, res, next) => {
     }
 
     idea.title = title;
-    idea.summery = summary;
+    idea.summary = summary;
     idea.description = description;
     idea.tags = Array.isArray(tags)
       ? tags

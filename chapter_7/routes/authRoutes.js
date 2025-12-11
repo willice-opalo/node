@@ -1,46 +1,46 @@
 import express from "express";
-// import Users from '../models/users.js'
+import User from "../models/User.js";
 import { jwtVerify } from "jose";
 import { JWT_SECRET } from "../utils/getJwtSecret.js";
 import { generateToken } from "../utils/generateToken.js";
-import Users from "../models/Users.js";
+
 const router = express.Router();
 
-//@route            POST app/auth/register
-//@description      Register new users
-//@access           Public
-router.post("/register", async function (req, res, next) {
+// @route         POST api/auth/register
+// @description   Register new user
+// @access        Public
+router.post("/register", async (req, res, next) => {
   try {
-    const { name, password, email } = req.body || {};
+    const { name, email, password } = req.body || {};
 
-    if (!name || !password || !email) {
-      res.send(400);
+    if (!name || !email || !password) {
+      res.status(400);
       throw new Error("All fields are required");
     }
 
-    const existingUser = await Users.findOne({ email });
+    const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      res.send(401);
+      res.status(400);
       throw new Error("User already exists");
     }
 
-    const user = await Users.create({ name, password, email });
+    const user = await User.create({ name, email, password });
 
-    //create Tokens
+    // Create Tokens
     const payload = { userId: user._id.toString() };
-    const accessToken = generateToken(payload, "1m");
-    const refreshToken = generateToken(payload, "30d");
+    const accessToken = await generateToken(payload, "1m");
+    const refreshToken = await generateToken(payload, "30d");
 
-    //setting the jwt to http-only cookie
+    // Set refresh token in HTTP-Only cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
-      maxAge: 30 * 24 * 60 * 60 * 1000, //30 days
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
-    res.send(201).json({
+    res.status(201).json({
       accessToken,
       user: {
         id: user._id,
@@ -54,48 +54,48 @@ router.post("/register", async function (req, res, next) {
   }
 });
 
-//@route            POST app/auth/login
-//@description      authenticate user
-//@access           Public
+// @route         POST api/auth/login
+// @description   Authenticate user
+// @access        Public
 router.post("/login", async (req, res, next) => {
   try {
     const { email, password } = req.body || {};
 
     if (!email || !password) {
-      res.status(404);
-      throw new Error("Email and Password are required");
+      res.status(400);
+      throw new Error("Email and password are required");
     }
 
-    //find the user
-    const user = await Users.findOne({ email });
+    // Find user
+    const user = await User.findOne({ email });
 
     if (!user) {
-      res.status(404);
+      res.status(401);
       throw new Error("Invalid Credentials");
     }
 
-    //Check is password hashed matches
+    // Check if password matches
     const isMatch = await user.matchPassword(password);
 
     if (!isMatch) {
-      res.status(404);
+      res.status(401);
       throw new Error("Invalid Credentials");
     }
 
-    //create Tokens
+    // Create Tokens
     const payload = { userId: user._id.toString() };
-    const accessToken = generateToken(payload, "1m");
-    const refreshToken = generateToken(payload, "30d");
+    const accessToken = await generateToken(payload, "1m");
+    const refreshToken = await generateToken(payload, "30d");
 
-    //setting the http-only cookie
+    // Set refresh token in HTTP-Only cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "none",
-      maxAge: 30 * 24 * 60 * 60 * 1000, //30 days
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days
     });
 
-    res.send(201).json({
+    res.status(201).json({
       accessToken,
       user: {
         id: user._id,
@@ -109,29 +109,26 @@ router.post("/login", async (req, res, next) => {
   }
 });
 
-//@route            POST app/auth/logout
-//@description      Logout User and clear refresh token
-//@access           Private
-
-router.post("/logout", (req, res, next) => {
+// @route         POST api/auth/logout
+// @description   Logout user and clear refresh token
+// @access        Private
+router.post("/logout", (req, res) => {
   res.clearCookie("refreshToken", {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
-    sameSite: "none",
+    sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
   });
 
-  res.status(200).json({
-    message: "Logged out Successfully",
-  });
+  res.status(200).json({ message: "Logged out successfully" });
 });
 
-//@route            POST app/auth/register
-//@description      Generate new access token from refresh token
-//@access           Public and it needs valid refresh cookie token
-router.post("./refresh", async (req, res, next) => {
+// @route         POST api/auth/refresh
+// @description   Generate new access token from refresh token
+// @access        Public (Needs valid refresh token in cookie)
+router.post("/refresh", async (req, res, next) => {
   try {
     const token = req.cookies?.refreshToken;
-    console.log("Refreshing Token...");
+    console.log("Refreshing token...");
 
     if (!token) {
       res.status(401);
@@ -140,7 +137,7 @@ router.post("./refresh", async (req, res, next) => {
 
     const { payload } = await jwtVerify(token, JWT_SECRET);
 
-    const user = await Users.findById(payload.userId);
+    const user = await User.findById(payload.userId);
 
     if (!user) {
       res.status(401);
@@ -165,4 +162,5 @@ router.post("./refresh", async (req, res, next) => {
     next(err);
   }
 });
+
 export default router;
