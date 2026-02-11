@@ -146,7 +146,7 @@ router.post("/refresh", async (req, res, next) => {
 
     const newAccessToken = await generateToken(
       { userId: user._id.toString() },
-      "1m"
+      "1m",
     );
 
     res.json({

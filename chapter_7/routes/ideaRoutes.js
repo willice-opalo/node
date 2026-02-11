@@ -73,8 +73,8 @@ router.post("/", protect, async (req, res, next) => {
               .map((tag) => tag.trim())
               .filter(Boolean)
           : Array.isArray(tags)
-          ? tags
-          : [],
+            ? tags
+            : [],
       user: req.user.id,
     });
 
@@ -158,11 +158,11 @@ router.put("/:id", protect, async (req, res, next) => {
     idea.tags = Array.isArray(tags)
       ? tags
       : typeof tags === "string"
-      ? tags
-          .split(",")
-          .map((t) => t.trim())
-          .filter(Boolean)
-      : [];
+        ? tags
+            .split(",")
+            .map((t) => t.trim())
+            .filter(Boolean)
+        : [];
 
     const updatedIdea = await idea.save();
 
