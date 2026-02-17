@@ -26,6 +26,7 @@ export const protect = async (req, res, next) => {
     }
 
     req.user = user;
+    console.log(req.user);
     next();
   } catch (err) {
     console.error(err);
